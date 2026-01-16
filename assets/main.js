@@ -228,11 +228,27 @@ function setupLoginForm() {
   });
 }
 
-function setupAdminForm() {
-  if (!adminForm) return;
-  requireAdminAuth();
+function collectSettingsFromForm() {
+  return {
+    phone: adminForm.querySelector("#clinic-phone").value.trim(),
+    email: adminForm.querySelector("#clinic-email").value.trim(),
+    address: adminForm.querySelector("#clinic-address").value.trim(),
+    logoUrl: adminForm.querySelector("#clinic-logo-url").value.trim(),
+    heroImageUrl: adminForm.querySelector("#clinic-hero-url").value.trim(),
+    doctorPhotos: {
+      "kk-roy": adminForm.querySelector("#doctor-kk-roy-url").value.trim(),
+      "r-sinha": adminForm.querySelector("#doctor-r-sinha-url").value.trim(),
+      "a-patel": adminForm.querySelector("#doctor-a-patel-url").value.trim(),
+    },
+    doctorEmails: {
+      "kk-roy": adminForm.querySelector("#doctor-kk-roy-email").value.trim(),
+      "r-sinha": adminForm.querySelector("#doctor-r-sinha-email").value.trim(),
+      "a-patel": adminForm.querySelector("#doctor-a-patel-email").value.trim(),
+    },
+  };
+}
 
-  const settings = getSettings();
+function populateAdminForm(settings) {
   adminForm.querySelector("#clinic-phone").value = settings.phone;
   adminForm.querySelector("#clinic-email").value = settings.email;
   adminForm.querySelector("#clinic-address").value = settings.address;
@@ -266,35 +282,32 @@ function setupAdminForm() {
     const url = settings.doctorPhotos[id];
     if (url) img.src = url;
   });
+}
+
+function showAdminStatus(message) {
+  const status = document.getElementById("admin-status");
+  if (status) {
+    status.classList.add("show");
+    status.textContent = message;
+  }
+}
+
+function setupAdminForm() {
+  if (!adminForm) return;
+  requireAdminAuth();
+
+  fetchSettings().then((settings) => {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    populateAdminForm(settings);
+    applySettings(settings);
+  });
 
   adminForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const nextSettings = {
-      phone: adminForm.querySelector("#clinic-phone").value.trim(),
-      email: adminForm.querySelector("#clinic-email").value.trim(),
-      address: adminForm.querySelector("#clinic-address").value.trim(),
-      logoUrl: adminForm.querySelector("#clinic-logo-url").value.trim(),
-      heroImageUrl: adminForm.querySelector("#clinic-hero-url").value.trim(),
-      doctorPhotos: {
-        "kk-roy": adminForm.querySelector("#doctor-kk-roy-url").value.trim(),
-        "r-sinha": adminForm.querySelector("#doctor-r-sinha-url").value.trim(),
-        "a-patel": adminForm.querySelector("#doctor-a-patel-url").value.trim(),
-      },
-      doctorEmails: {
-        "kk-roy": adminForm.querySelector("#doctor-kk-roy-email").value.trim(),
-        "r-sinha": adminForm.querySelector("#doctor-r-sinha-email").value.trim(),
-        "a-patel": adminForm.querySelector("#doctor-a-patel-email").value.trim(),
-      },
-    };
-
+    const nextSettings = collectSettingsFromForm();
     applySettings(nextSettings);
     saveSettings(nextSettings);
-
-    const status = document.getElementById("admin-status");
-    if (status) {
-      status.classList.add("show");
-      status.textContent = "Settings saved to the database.";
-    }
+    showAdminStatus("Settings saved to the database.");
   });
 
   const resetButton = document.getElementById("admin-reset");
@@ -327,9 +340,24 @@ function setupAdminForm() {
         );
         if (urlInput) urlInput.value = dataUrl;
         if (preview) preview.src = dataUrl;
+        const nextSettings = collectSettingsFromForm();
+        applySettings(nextSettings);
+        saveSettings(nextSettings);
+        showAdminStatus("Image uploaded and saved.");
       };
       reader.readAsDataURL(file);
     });
+  });
+
+  let autosaveTimer;
+  adminForm.addEventListener("input", () => {
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(() => {
+      const nextSettings = collectSettingsFromForm();
+      applySettings(nextSettings);
+      saveSettings(nextSettings);
+      showAdminStatus("Changes auto-saved.");
+    }, 800);
   });
 
   renderSubmissions();
