@@ -1,7 +1,16 @@
 const { getStore } = require("@netlify/blobs");
 
+function getBlobStore() {
+  const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
+  const token = process.env.NETLIFY_AUTH_TOKEN || process.env.BLOBS_TOKEN;
+  if (siteID && token) {
+    return getStore("kkroy", { siteID, token });
+  }
+  return getStore("kkroy");
+}
+
 exports.handler = async (event) => {
-  const store = getStore("kkroy");
+  const store = getBlobStore();
 
   if (event.httpMethod === "GET") {
     const settings = await store.get("settings", { type: "json" });
