@@ -222,6 +222,14 @@ a {
   border-radius: 20px;
 }
 
+.hero-card-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-bottom: 1.2rem;
+}
+
 .contact-pill {
   background: var(--white);
   padding: 0.8rem 1rem;

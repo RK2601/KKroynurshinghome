@@ -29,6 +29,7 @@ const DEFAULT_SETTINGS = {
   email: "kkrry.nursinghome@gmail.com",
   address: "Station Road, Muzaffarpur, Bihar 842001",
   logoUrl: "",
+  heroImageUrl: "",
   doctorPhotos: {
     "kk-roy": "",
     "r-sinha": "",
@@ -81,6 +82,12 @@ function applySettings(settings) {
       brand.classList.add("has-logo");
     } else {
       brand.classList.remove("has-logo");
+    }
+  });
+
+  document.querySelectorAll("[data-hero-image]").forEach((img) => {
+    if (settings.heroImageUrl) {
+      img.src = settings.heroImageUrl;
     }
   });
 
@@ -184,6 +191,7 @@ function setupAdminForm() {
   adminForm.querySelector("#clinic-email").value = settings.email;
   adminForm.querySelector("#clinic-address").value = settings.address;
   adminForm.querySelector("#clinic-logo-url").value = settings.logoUrl;
+  adminForm.querySelector("#clinic-hero-url").value = settings.heroImageUrl;
 
   adminForm.querySelector("#doctor-kk-roy-url").value =
     settings.doctorPhotos["kk-roy"];
@@ -202,6 +210,10 @@ function setupAdminForm() {
   if (settings.logoUrl && logoPreview) {
     logoPreview.src = settings.logoUrl;
   }
+  const heroPreview = document.getElementById("hero-preview");
+  if (settings.heroImageUrl && heroPreview) {
+    heroPreview.src = settings.heroImageUrl;
+  }
 
   document.querySelectorAll("[data-preview]").forEach((img) => {
     const id = img.dataset.preview;
@@ -216,6 +228,7 @@ function setupAdminForm() {
       email: adminForm.querySelector("#clinic-email").value.trim(),
       address: adminForm.querySelector("#clinic-address").value.trim(),
       logoUrl: adminForm.querySelector("#clinic-logo-url").value.trim(),
+      heroImageUrl: adminForm.querySelector("#clinic-hero-url").value.trim(),
       doctorPhotos: {
         "kk-roy": adminForm.querySelector("#doctor-kk-roy-url").value.trim(),
         "r-sinha": adminForm.querySelector("#doctor-r-sinha-url").value.trim(),

@@ -90,6 +90,25 @@
               <div class="preview-card">
                 <img id="logo-preview" data-preview="logo" alt="Logo preview" />
               </div>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="clinic-hero-url">Landing Image URL</label>
+                  <input id="clinic-hero-url" type="text" placeholder="https://..." />
+                </div>
+                <div class="field">
+                  <label for="clinic-hero-file">Upload Landing Image</label>
+                  <input
+                    id="clinic-hero-file"
+                    type="file"
+                    accept="image/*"
+                    data-file-input="clinic-hero-url"
+                    data-preview-target="hero"
+                  />
+                </div>
+              </div>
+              <div class="preview-card">
+                <img id="hero-preview" data-preview="hero" alt="Landing image preview" />
+              </div>
 
               <h2>Doctor Photos</h2>
               <p class="form-note">
