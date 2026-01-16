@@ -24,6 +24,8 @@ const ADMIN_CREDENTIALS = {
   id: "rupeshyadav@gmail.com",
   password: "Anand845424",
 };
+const SETTINGS_ENDPOINT = "/.netlify/functions/settings";
+const SUBMISSIONS_ENDPOINT = "/.netlify/functions/submissions";
 const DEFAULT_SETTINGS = {
   phone: "+91 98765 43210",
   email: "kkrry.nursinghome@gmail.com",
@@ -61,6 +63,41 @@ function getSettings() {
     };
   } catch (error) {
     return { ...DEFAULT_SETTINGS };
+  }
+}
+
+async function fetchSettings() {
+  try {
+    const response = await fetch(SETTINGS_ENDPOINT);
+    if (!response.ok) throw new Error("Failed to fetch settings");
+    const data = await response.json();
+    return {
+      ...DEFAULT_SETTINGS,
+      ...data,
+      doctorPhotos: {
+        ...DEFAULT_SETTINGS.doctorPhotos,
+        ...(data.doctorPhotos || {}),
+      },
+      doctorEmails: {
+        ...DEFAULT_SETTINGS.doctorEmails,
+        ...(data.doctorEmails || {}),
+      },
+    };
+  } catch (error) {
+    return getSettings();
+  }
+}
+
+async function saveSettings(settings) {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  try {
+    await fetch(SETTINGS_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(settings),
+    });
+  } catch (error) {
+    // Fallback to localStorage only when offline.
   }
 }
 
@@ -108,21 +145,30 @@ function applySettings(settings) {
   });
 }
 
-const savedSettings = getSettings();
-applySettings(savedSettings);
+fetchSettings().then((settings) => {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  applySettings(settings);
+});
 
 const appointmentForm = document.querySelector("[data-appointment-form]");
 const contactForm = document.querySelector("[data-contact-form]");
 
 function saveSubmission(type, values) {
   const existing = JSON.parse(localStorage.getItem(SUBMISSIONS_KEY) || "[]");
-  existing.unshift({
+  const entry = {
     id: Date.now(),
     type,
     values,
     submittedAt: new Date().toISOString(),
-  });
+  };
+  existing.unshift(entry);
   localStorage.setItem(SUBMISSIONS_KEY, JSON.stringify(existing));
+
+  fetch(SUBMISSIONS_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(entry),
+  }).catch(() => {});
 }
 
 function handleFormSubmit(form, messageId, type) {
@@ -241,13 +287,13 @@ function setupAdminForm() {
       },
     };
 
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(nextSettings));
     applySettings(nextSettings);
+    saveSettings(nextSettings);
 
     const status = document.getElementById("admin-status");
     if (status) {
       status.classList.add("show");
-      status.textContent = "Settings saved. Refresh other pages to see updates.";
+      status.textContent = "Settings saved to the database.";
     }
   });
 
@@ -291,6 +337,7 @@ function setupAdminForm() {
   if (clearButton) {
     clearButton.addEventListener("click", () => {
       localStorage.removeItem(SUBMISSIONS_KEY);
+      fetch(SUBMISSIONS_ENDPOINT, { method: "DELETE" }).catch(() => {});
       renderSubmissions();
     });
   }
@@ -303,26 +350,30 @@ function renderSubmissions() {
   const tableBody = document.querySelector("[data-submissions-body]");
   const emptyState = document.querySelector("[data-submissions-empty]");
   if (!tableBody) return;
-  const submissions = JSON.parse(localStorage.getItem(SUBMISSIONS_KEY) || "[]");
   tableBody.innerHTML = "";
 
-  if (submissions.length === 0) {
-    if (emptyState) emptyState.style.display = "block";
-    return;
-  }
-  if (emptyState) emptyState.style.display = "none";
+  fetch(SUBMISSIONS_ENDPOINT)
+    .then((response) => response.json())
+    .catch(() => JSON.parse(localStorage.getItem(SUBMISSIONS_KEY) || "[]"))
+    .then((submissions) => {
+      if (submissions.length === 0) {
+        if (emptyState) emptyState.style.display = "block";
+        return;
+      }
+      if (emptyState) emptyState.style.display = "none";
 
-  submissions.slice(0, 50).forEach((entry) => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td><strong>${entry.type}</strong><small>${new Date(
-      entry.submittedAt
-    ).toLocaleString()}</small></td>
-      <td>${entry.values.name || "-"}</td>
-      <td>${entry.values.phone || "-"}</td>
-      <td>${entry.values.service || entry.values.topic || "-"}</td>
-      <td>${entry.values.message || "-"}</td>
-    `;
-    tableBody.appendChild(row);
-  });
+      submissions.slice(0, 50).forEach((entry) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td><strong>${entry.type}</strong><small>${new Date(
+          entry.submittedAt
+        ).toLocaleString()}</small></td>
+          <td>${entry.values?.name || "-"}</td>
+          <td>${entry.values?.phone || "-"}</td>
+          <td>${entry.values?.service || entry.values?.topic || "-"}</td>
+          <td>${entry.values?.message || "-"}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    });
 }
