@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Panel | KK Roy Nurshing Home</title>
+    <meta
+      name="description"
+      content="Admin panel for updating KK Roy Nurshing Home contact info, logo, and doctor photos."
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="brand" href="index.html">
+          <span class="brand-mark">KK</span>
+          <img class="brand-logo" data-brand-logo alt="KK Roy Nurshing Home Logo" />
+          <span class="brand-text">
+            <strong>KK Roy Nurshing Home</strong>
+            <small>Muzaffarpur, Bihar</small>
+          </span>
+        </a>
+        <button class="nav-toggle" aria-label="Toggle navigation" type="button">
+          ☰
+        </button>
+        <nav class="site-nav">
+          <a class="nav-link" href="index.html">Home</a>
+          <a class="nav-link" href="about.html">About</a>
+          <a class="nav-link" href="services.html">Specialities</a>
+          <a class="nav-link" href="doctors.html">Doctors</a>
+          <a class="nav-link" href="facilities.html">Facilities</a>
+          <a class="nav-link" href="contact.html">Contact</a>
+          <a class="nav-link cta" href="appointment.html">Book Appointment</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <div class="container">
+          <p class="eyebrow">Admin Panel</p>
+          <h1>Update clinic details and doctor photos</h1>
+          <p class="lead">
+            Changes are saved locally in your browser. Refresh the public pages
+            to see updates.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="form-card">
+            <h2>Clinic Information</h2>
+            <p class="form-note">
+              Update phone number, address, email, and logo.
+            </p>
+            <div class="status-message" id="admin-status"></div>
+            <form data-admin-form>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="clinic-phone">Phone Number</label>
+                  <input id="clinic-phone" type="text" required />
+                </div>
+                <div class="field">
+                  <label for="clinic-email">Email</label>
+                  <input id="clinic-email" type="email" required />
+                </div>
+              </div>
+              <div class="field">
+                <label for="clinic-address">Address</label>
+                <input id="clinic-address" type="text" required />
+              </div>
+              <div class="form-grid">
+                <div class="field">
+                  <label for="clinic-logo-url">Logo URL</label>
+                  <input id="clinic-logo-url" type="text" placeholder="https://..." />
+                </div>
+                <div class="field">
+                  <label for="clinic-logo-file">Upload Logo</label>
+                  <input
+                    id="clinic-logo-file"
+                    type="file"
+                    accept="image/*"
+                    data-file-input="clinic-logo-url"
+                    data-preview-target="logo"
+                  />
+                </div>
+              </div>
+              <div class="preview-card">
+                <img id="logo-preview" data-preview="logo" alt="Logo preview" />
+              </div>
+
+              <h2>Doctor Photos</h2>
+              <p class="form-note">
+                Add a photo URL or upload a file for each doctor.
+              </p>
+              <div class="admin-grid">
+                <div class="field">
+                  <label for="doctor-kk-roy-url">Dr. K.K. Roy Photo URL</label>
+                  <input id="doctor-kk-roy-url" type="text" placeholder="https://..." />
+                  <label for="doctor-kk-roy-email">Dr. K.K. Roy Email</label>
+                  <input id="doctor-kk-roy-email" type="email" placeholder="name@example.com" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    data-file-input="doctor-kk-roy-url"
+                    data-preview-target="kk-roy"
+                  />
+                  <div class="preview-card">
+                    <img data-preview="kk-roy" alt="Dr. K.K. Roy preview" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="doctor-r-sinha-url">Dr. R. Sinha Photo URL</label>
+                  <input id="doctor-r-sinha-url" type="text" placeholder="https://..." />
+                  <label for="doctor-r-sinha-email">Dr. R. Sinha Email</label>
+                  <input id="doctor-r-sinha-email" type="email" placeholder="name@example.com" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    data-file-input="doctor-r-sinha-url"
+                    data-preview-target="r-sinha"
+                  />
+                  <div class="preview-card">
+                    <img data-preview="r-sinha" alt="Dr. R. Sinha preview" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="doctor-a-patel-url">Dr. A. Patel Photo URL</label>
+                  <input id="doctor-a-patel-url" type="text" placeholder="https://..." />
+                  <label for="doctor-a-patel-email">Dr. A. Patel Email</label>
+                  <input id="doctor-a-patel-email" type="email" placeholder="name@example.com" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    data-file-input="doctor-a-patel-url"
+                    data-preview-target="a-patel"
+                  />
+                  <div class="preview-card">
+                    <img data-preview="a-patel" alt="Dr. A. Patel preview" />
+                  </div>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button class="button primary" type="submit">Save Changes</button>
+                <button class="button ghost" type="button" id="admin-reset">
+                  Reset to Default
+                </button>
+                <button class="button ghost" type="button" id="admin-logout">
+                  Logout
+                </button>
+                <span class="form-note">Changes apply to this browser only.</span>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="section alt">
+        <div class="container">
+          <div class="section-title">
+            <p class="eyebrow">Form Submissions</p>
+            <h2>Recent appointment and contact requests</h2>
+            <p class="form-note">
+              Submissions are stored locally in this browser.
+            </p>
+          </div>
+          <div class="form-actions">
+            <button class="button ghost" type="button" id="admin-clear-submissions">
+              Clear Submissions
+            </button>
+          </div>
+          <div class="table-card">
+            <div class="empty-state" data-submissions-empty>
+              No submissions yet.
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Type &amp; Time</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Topic/Speciality</th>
+                  <th>Message</th>
+                </tr>
+              </thead>
+              <tbody data-submissions-body></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <h3>KK Roy Nurshing Home</h3>
+          <p>
+            A trusted multi-speciality nursing home providing compassionate
+            healthcare for Muzaffarpur and nearby districts.
+          </p>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <a href="services.html">Specialities</a>
+          <a href="doctors.html">Doctors</a>
+          <a href="facilities.html">Facilities</a>
+          <a href="appointment.html">Appointment</a>
+          <a href="admin-login.html">Admin Login</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <p><span data-address>Station Road, Muzaffarpur, Bihar 842001</span></p>
+          <p><span data-phone>+91 98765 43210</span></p>
+          <p><span data-email>kkrry.nursinghome@gmail.com</span></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        © 2026 KK Roy Nurshing Home. All rights reserved.
+      </div>
+    </footer>
+
+    <script src="assets/main.js"></script>
+  </body>
+</html>
+
+
+

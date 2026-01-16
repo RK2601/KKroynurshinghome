@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Login | KK Roy Nurshing Home</title>
+    <meta
+      name="description"
+      content="Login to manage KK Roy Nurshing Home website settings."
+    />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="brand" href="index.html">
+          <span class="brand-mark">KK</span>
+          <img class="brand-logo" data-brand-logo alt="KK Roy Nurshing Home Logo" />
+          <span class="brand-text">
+            <strong>KK Roy Nurshing Home</strong>
+            <small>Muzaffarpur, Bihar</small>
+          </span>
+        </a>
+        <button class="nav-toggle" aria-label="Toggle navigation" type="button">
+          ☰
+        </button>
+        <nav class="site-nav">
+          <a class="nav-link" href="index.html">Home</a>
+          <a class="nav-link" href="about.html">About</a>
+          <a class="nav-link" href="services.html">Specialities</a>
+          <a class="nav-link" href="doctors.html">Doctors</a>
+          <a class="nav-link" href="facilities.html">Facilities</a>
+          <a class="nav-link" href="contact.html">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="auth-hero">
+        <div class="container auth-grid">
+          <div class="auth-side">
+            <span class="pill">Secure Access</span>
+            <h1>Admin Login</h1>
+            <p class="lead">
+              Manage clinic contact details, doctor profiles, and website updates
+              from one central dashboard.
+            </p>
+            <div class="card-grid">
+              <div class="card icon-card">
+                <div class="icon">🛡️</div>
+                <h3>Protected Access</h3>
+                <p>Only authorized users can access the admin tools.</p>
+              </div>
+              <div class="card icon-card">
+                <div class="icon">⚡</div>
+                <h3>Instant Updates</h3>
+                <p>Apply changes immediately across the website.</p>
+              </div>
+            </div>
+          </div>
+          <div class="auth-panel">
+            <div class="auth-card">
+              <h2>Welcome Back</h2>
+              <p class="form-note">
+                Sign in with your admin credentials to continue.
+              </p>
+              <div class="status-message" id="login-status"></div>
+              <form data-login-form>
+                <div class="field">
+                  <label for="login-id">Login ID</label>
+                  <input
+                    id="login-id"
+                    name="login-id"
+                    type="text"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label for="login-password">Password</label>
+                  <input
+                    id="login-password"
+                    name="login-password"
+                    type="password"
+                    placeholder="Enter your password"
+                    required
+                  />
+                </div>
+                <button class="button primary" type="submit">Login</button>
+              </form>
+            </div>
+            <div class="preview-card">
+              Need help? Contact the administrator for access support.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div>
+          <h3>KK Roy Nurshing Home</h3>
+          <p>
+            A trusted multi-speciality nursing home providing compassionate
+            healthcare for Muzaffarpur and nearby districts.
+          </p>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <a href="services.html">Specialities</a>
+          <a href="doctors.html">Doctors</a>
+          <a href="facilities.html">Facilities</a>
+          <a href="appointment.html">Appointment</a>
+          <a href="admin.html">Admin Panel</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <p><span data-address>Station Road, Muzaffarpur, Bihar 842001</span></p>
+          <p><span data-phone>+91 98765 43210</span></p>
+          <p><span data-email>kkrry.nursinghome@gmail.com</span></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        © 2026 KK Roy Nurshing Home. All rights reserved.
+      </div>
+    </footer>
+
+    <script src="assets/main.js"></script>
+  </body>
+</html>
+
