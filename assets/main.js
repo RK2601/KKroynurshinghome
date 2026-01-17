@@ -327,25 +327,21 @@ function setupAdminForm() {
   }
 
   document.querySelectorAll("[data-file-input]").forEach((input) => {
-    input.addEventListener("change", (event) => {
+    input.addEventListener("change", async (event) => {
       const file = event.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (loadEvent) => {
-        const dataUrl = loadEvent.target.result;
-        const targetId = input.dataset.fileInput;
-        const urlInput = document.getElementById(targetId);
-        const preview = document.querySelector(
-          `[data-preview="${input.dataset.previewTarget}"]`
-        );
-        if (urlInput) urlInput.value = dataUrl;
-        if (preview) preview.src = dataUrl;
-        const nextSettings = collectSettingsFromForm();
-        applySettings(nextSettings);
-        saveSettings(nextSettings);
-        showAdminStatus("Image uploaded and saved.");
-      };
-      reader.readAsDataURL(file);
+      const dataUrl = await compressImage(file, 900, 900, 0.8);
+      const targetId = input.dataset.fileInput;
+      const urlInput = document.getElementById(targetId);
+      const preview = document.querySelector(
+        `[data-preview="${input.dataset.previewTarget}"]`
+      );
+      if (urlInput) urlInput.value = dataUrl;
+      if (preview) preview.src = dataUrl;
+      const nextSettings = collectSettingsFromForm();
+      applySettings(nextSettings);
+      saveSettings(nextSettings);
+      showAdminStatus("Image uploaded and saved.");
     });
   });
 
@@ -404,4 +400,28 @@ function renderSubmissions() {
         tableBody.appendChild(row);
       });
     });
+}
+
+function compressImage(file, maxWidth, maxHeight, quality) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(
+          maxWidth / img.width,
+          maxHeight / img.height,
+          1
+        );
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
 }
