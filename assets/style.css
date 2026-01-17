@@ -866,6 +866,14 @@ textarea:focus {
   padding: 3rem 0 2rem;
 }
 
+.footer-logo {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  object-fit: cover;
+  margin-bottom: 0.8rem;
+}
+
 .footer-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
