@@ -1,49 +1,50 @@
-const { getStore } = require("@netlify/blobs");
+const { neon } = require("@netlify/neon");
 
-function getBlobStore() {
-  const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
-  const token = process.env.NETLIFY_AUTH_TOKEN || process.env.BLOBS_TOKEN;
-  if (siteID && token) {
-    return getStore("kkroy", { siteID, token });
-  }
-  return getStore("kkroy");
+const sql = neon();
+
+async function ensureSchema() {
+  await sql`
+    CREATE TABLE IF NOT EXISTS submissions (
+      id BIGSERIAL PRIMARY KEY,
+      type TEXT NOT NULL,
+      payload JSONB NOT NULL,
+      submitted_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
 }
 
 exports.handler = async (event) => {
-  const store = getBlobStore();
+  await ensureSchema();
 
   if (event.httpMethod === "GET") {
-    const submissions = await store.get("submissions", { type: "json" });
-    return {
-      statusCode: 200,
-      body: JSON.stringify(submissions || []),
-    };
+    const rows = await sql`
+      SELECT id, type, payload, submitted_at
+      FROM submissions
+      ORDER BY submitted_at DESC
+      LIMIT 200
+    `;
+    const result = rows.map((row) => ({
+      id: row.id,
+      type: row.type,
+      values: row.payload,
+      submittedAt: row.submitted_at,
+    }));
+    return { statusCode: 200, body: JSON.stringify(result) };
   }
 
   if (event.httpMethod === "POST") {
     const payload = JSON.parse(event.body || "{}");
-    const submissions = (await store.get("submissions", { type: "json" })) || [];
-    submissions.unshift({
-      id: Date.now(),
-      ...payload,
-    });
-    await store.set("submissions", submissions.slice(0, 200), { type: "json" });
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ ok: true }),
-    };
+    await sql`
+      INSERT INTO submissions (type, payload, submitted_at)
+      VALUES (${payload.type || "Unknown"}, ${payload.values || {}}, NOW())
+    `;
+    return { statusCode: 200, body: JSON.stringify({ ok: true }) };
   }
 
   if (event.httpMethod === "DELETE") {
-    await store.set("submissions", [], { type: "json" });
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ ok: true }),
-    };
+    await sql`TRUNCATE TABLE submissions`;
+    return { statusCode: 200, body: JSON.stringify({ ok: true }) };
   }
 
-  return {
-    statusCode: 405,
-    body: "Method Not Allowed",
-  };
+  return { statusCode: 405, body: "Method Not Allowed" };
 };

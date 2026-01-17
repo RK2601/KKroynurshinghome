@@ -1,36 +1,36 @@
-const { getStore } = require("@netlify/blobs");
+const { neon } = require("@netlify/neon");
 
-function getBlobStore() {
-  const siteID = process.env.NETLIFY_SITE_ID || process.env.SITE_ID;
-  const token = process.env.NETLIFY_AUTH_TOKEN || process.env.BLOBS_TOKEN;
-  if (siteID && token) {
-    return getStore("kkroy", { siteID, token });
-  }
-  return getStore("kkroy");
+const sql = neon();
+
+async function ensureSchema() {
+  await sql`
+    CREATE TABLE IF NOT EXISTS settings (
+      id INTEGER PRIMARY KEY,
+      payload JSONB NOT NULL,
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `;
 }
 
 exports.handler = async (event) => {
-  const store = getBlobStore();
+  await ensureSchema();
 
   if (event.httpMethod === "GET") {
-    const settings = await store.get("settings", { type: "json" });
-    return {
-      statusCode: 200,
-      body: JSON.stringify(settings || {}),
-    };
+    const rows = await sql`SELECT payload FROM settings WHERE id = 1`;
+    return { statusCode: 200, body: JSON.stringify(rows[0]?.payload || {}) };
   }
 
   if (event.httpMethod === "POST") {
     const payload = JSON.parse(event.body || "{}");
-    await store.set("settings", payload, { type: "json" });
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ ok: true }),
-    };
+    await sql`
+      INSERT INTO settings (id, payload, updated_at)
+      VALUES (1, ${payload}, NOW())
+      ON CONFLICT (id) DO UPDATE
+      SET payload = EXCLUDED.payload,
+          updated_at = NOW()
+    `;
+    return { statusCode: 200, body: JSON.stringify({ ok: true }) };
   }
 
-  return {
-    statusCode: 405,
-    body: "Method Not Allowed",
-  };
+  return { statusCode: 405, body: "Method Not Allowed" };
 };

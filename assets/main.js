@@ -167,7 +167,7 @@ function saveSubmission(type, values) {
   fetch(SUBMISSIONS_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(entry),
+    body: JSON.stringify({ type, values }),
   }).catch(() => {});
 }
 
