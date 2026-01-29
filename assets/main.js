@@ -425,3 +425,4 @@ function compressImage(file, maxWidth, maxHeight, quality) {
     reader.readAsDataURL(file);
   });
 }
+
